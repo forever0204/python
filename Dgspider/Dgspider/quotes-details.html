@@ -1,0 +1,1852 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    
+<head>          
+            <link rel="canonical" href="http://blog.csdn.net/qq_31573519/article/details/71107162"/> 
+
+ <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848" /> 
+       
+    <title>Python3+Scrapy实现网页爬虫 - 止鱼 - CSDN博客</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="网页爬虫设计项目驱动，需要从网站上爬取文章，并上传至服务器，实现模拟用户发帖。  框架采用Python3，配合爬虫框架Scrapy实现，目前只能抓取静态页，JS+Ajax动态加载的网页见下一篇博客GitHub地址：https://github.com/JohonseZhang/Scrapy-Spider-based-on-Python3 求Star~项目结构代码结构图： 创建项目进入指定文" />
+
+    <meta name="keywords" content="python,scrapy-爬虫" />
+    <script src="http://static.blog.csdn.net/scripts/blog_static_head.min.js" type="text/javascript"></script>
+
+
+    <link rel="Stylesheet" type="text/css" href="http://static.blog.csdn.net/skin/skin-yellow/css/style.css?v=1.4" />
+
+    
+
+    <link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="/qq_31573519/rss/list" />
+    <link rel="shortcut icon" href="http://c.csdnimg.cn/public/favicon.ico" />
+    <link type="text/css" rel="stylesheet" href="http://static.blog.csdn.net/scripts/SyntaxHighlighter/styles/default.css?v1" />
+ 
+
+
+
+    <link href="http://c.csdnimg.cn/blog/csdn_public_blog_detail.min.css" type="text/css" rel="stylesheet" />
+     
+         <link rel="stylesheet" href="http://static.blog.csdn.net/css/csdn_blog_detail.min.css" />
+
+    <!-- 璇风疆浜庢墍鏈夊箍鍛婁綅浠ｇ爜涔嬪墠 --> 
+            <script src="http://dup.baidustatic.com/js/ds.js"></script>
+
+</head>
+
+    
+<body>
+        <div class="tracking-ad" data-view="true" data-mod="ad_popu_72"  data-mtp="62" data-order="40" data-con="ad_content_2072" >
+                     <script id="popuLayer_js_q" src="http://ads.csdn.net/js/popuLayer.js" defer="defer"  type="text/javascript"></script>
+                <div id="layerd" style="position: fixed;bottom:0px;right:0px;line-height:0px;z-index:1000">
+    	                <div class="J_close layer_close" style="display:;background-color:#efefef;padding:0px;color:#333;font:12px/24px Helvetica,Tahoma,Arial,sans-serif;text-align:right;">鍏抽棴</div><!-- 骞垮憡鍗犱綅瀹瑰櫒 -->
+                    <div id="cpro_u2895327">
+                        <!-- 鎶曟斁浠ｇ爜 -->
+                        <script src="http://dup.baidustatic.com/js/ds.js"></script>
+                       <!-- 骞垮憡浣嶏細PC绔?鍗氬璇︽儏椤靛彸渚у脊绐?300*250 -->
+                            <script>
+                                (function () {
+                                    var s = "_" + Math.random().toString(36).slice(2);
+                                    document.write('<div id="' + s + '"></div>');
+                                    (window.slotbydup = window.slotbydup || []).push({
+                                        id: '4740870',
+                                        container: s,
+                                        size: '300,250',
+                                        display: 'inlay-fix'
+                                    });
+                                })();
+                            </script>
+                    </div></div>
+                <script>  document.getElementById("popuLayer_js_q").onload = function () {
+      var styObjd = styObj = { width: "300px", "height": parseInt(250) + 28 };
+      window.CSDN.Layer.PopuLayer("#layerd", { storageName: "layerd", styleObj: styObjd, total: 50, expoire: 1000 * 60 });
+  }</script>
+            
+     
+        </div>
+
+       
+      <!--new top-->
+    <script id="toolbar-tpl-scriptId" src="http://csdnimg.cn/public/common/toolbar/js/content_toolbar.js" type="text/javascript" domain="http://blog.csdn.net"></script>
+
+    <link rel="stylesheet" href="http://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+     <!--new top-->
+    <div id="container">
+        
+<div id="header">
+    <div class="header">
+        <div id="blog_title">
+            <h2>
+                <a href="http://blog.csdn.net/qq_31573519">止鱼</a></h2>
+            <h3>你必须拼尽全力才能看起来毫不费力</h3>
+            <div class="clear">
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+        
+    
+    </div>
+</div>
+<div id="navigator">
+    <div class="navigator_bg">
+    </div>
+    <div class="navigator">
+        <ul>           
+                <li id="btnContents"><a href="http://blog.csdn.net/qq_31573519?viewmode=contents"><span onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_mulu'])">
+                    <img src="http://static.blog.csdn.net/images/ico_list.gif">目录视图</span></a></li>
+                <li id="btnView"><a href="http://blog.csdn.net/qq_31573519?viewmode=list"><span onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_zhaiyao'])">
+                    <img src="http://static.blog.csdn.net/images/ico_summary.gif">摘要视图</span></a></li>
+                <li id="btnRss"><a href="http://blog.csdn.net/qq_31573519/rss/list"><span onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_RSS'])">
+                    <img src="http://static.blog.csdn.net/images/ico_rss.gif">订阅</span></a></li>                   
+            
+
+            </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var username = "qq_31573519";
+    var _blogger = username;
+    var blog_address = "http://blog.csdn.net/qq_31573519";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = "";  
+</script>
+
+        <div id="body">
+            <div id="main">
+                <div class="main">
+                        <div class="ad_class">
+<div class="notice tracking-ad" data-mod='popu_3' > 
+
+<a href="http://blog.csdn.net/turingbooks/article/details/78475571">
+<font color=red><strong>图灵赠书——程序员11月书单</strong></font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp
+
+
+<a href="http://edu.csdn.net/topic/python2?utm_source=blog4">
+<font color=blue><strong>【思考】Python这么厉害的原因竟然是！</strong></font></a>
+&nbsp;&nbsp;&nbsp;&nbsp
+
+<a 
+href="http://blog.csdn.net/epubit17/article/details/78606519">
+<font color=blue><strong>感恩节赠书：《深度学习》等异步社区优秀图书和作译者评选启动！</strong></font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp
+
+
+<a href="http://blog.csdn.net/broadview2006/article/details/78603363">
+<font color=red><strong>每周荐书：京东架构、Linux内核、Python全栈</strong></font></a>
+
+
+
+</div>
+                        </div>
+
+                        
+
+
+
+
+
+  
+
+
+
+
+
+
+<script   type="text/javascript" src="http://static.blog.csdn.net/scripts/category.js"></script>
+
+  <script type="text/ecmascript">
+      window.quickReplyflag = true;
+      var isBole = false; 
+      var fasrc="http://my.csdn.net/my/favorite/miniadd?t=Python3%2bScrapy%e5%ae%9e%e7%8e%b0%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab&u=http://blog.csdn.net/qq_31573519/article/details/71107162"
+    </script>
+<div id="article_details" class="details">
+    
+<div class="article_title">   
+         <span class="ico ico_type_Original"></span>
+
+    <h1>
+        <span class="link_title"><a href="/qq_31573519/article/details/71107162">
+        Python3+Scrapy实现网页爬虫        
+           
+        </a>
+        </span>
+
+         
+    </h1>
+</div>
+
+   
+
+    
+    <div class="article_manage clearfix">
+        <div class="article_l">
+            <span class="link_categories">
+            标签：
+              <a href='http://www.csdn.net/tag/python' target=_blank onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_tag']);">python</a><a href='http://www.csdn.net/tag/scrapy-%e7%88%ac%e8%99%ab' target=_blank onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_tag']);">scrapy-爬虫</a>
+            </span>
+        </div>
+        <div class="article_r">
+            <span class="link_postdate">2017-05-03 09:55</span>
+            <span class="link_view" title="阅读次数">7021人阅读</span>
+            <span class="link_comments" title="评论次数"> <a href="#comments" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_pinglun'])">评论</a>(0)</span>
+            <span class="link_collect tracking-ad" data-mod="popu_171"> <a href="javascript:void(0);" onclick="javascript:collectArticle('Python3%2bScrapy%e5%ae%9e%e7%8e%b0%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab','71107162');return false;" title="收藏">收藏</a></span>
+             <span class="link_report"> <a href="#report" onclick="javascript:report(71107162,2);return false;" title="举报">举报</a></span>
+
+        </div>
+    </div>    <style type="text/css">        
+            .embody{
+                padding:10px 10px 10px;
+                margin:0 -20px;
+                border-bottom:solid 1px #ededed;                
+            }
+            .embody_b{
+                margin:0 ;
+                padding:10px 0;
+            }
+            .embody .embody_t,.embody .embody_c{
+                display: inline-block;
+                margin-right:10px;
+            }
+            .embody_t{
+                font-size: 12px;
+                color:#999;
+            }
+            .embody_c{
+                font-size: 12px;
+            }
+            .embody_c img,.embody_c em{
+                display: inline-block;
+                vertical-align: middle;               
+            }
+             .embody_c img{               
+                width:30px;
+                height:30px;
+            }
+            .embody_c em{
+                margin: 0 20px 0 10px;
+                color:#333;
+                font-style: normal;
+            }
+    </style>
+    <script  type="text/javascript">
+        $(function () {
+            try
+            {
+                var lib = eval("("+$("#lib").attr("value")+")");
+                var html = "";
+                if (lib.err == 0) {
+                    $.each(lib.data, function (i) {
+                        var obj = lib.data[i];
+                        //html += '<img src="' + obj.logo + '"/>' + obj.name + "&nbsp;&nbsp;";
+                        html += ' <a href="' + obj.url + '" target="_blank">';
+                        html += ' <img src="' + obj.logo + '">';
+                        html += ' <em><b>' + obj.name + '</b></em>';
+                        html += ' </a>';
+                    });
+                    if (html != "") {
+                        setTimeout(function () {
+                            $("#lib").html(html);                      
+                            $("#embody").show();
+                        }, 100);
+                    }
+                }      
+            } catch (err)
+            { }
+            
+        });
+    </script>
+      <div class="category clearfix">
+        <div class="category_l">
+           <img src="http://static.blog.csdn.net/images/category_icon.jpg">
+            <span>分类：</span>
+        </div>
+        <div class="category_r">
+                    <label  onclick="GetCategoryArticles('6822424','qq_31573519','top','71107162');">
+                        <span onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_fenlei']);">Python<em>（5）</em></span>
+                      <img class="arrow-down" src="http://static.blog.csdn.net/images/arrow_triangle _down.jpg" style="display:inline;">
+                      <img class="arrow-up" src="http://static.blog.csdn.net/images/arrow_triangle_up.jpg" style="display:none;">
+                        <div class="subItem">
+                            <div class="subItem_t"><a  href="http://blog.csdn.net/qq_31573519/article/category/6822424"  target="_blank">作者同类文章</a><i class="J_close">X</i></div>
+                            <ul class="subItem_l" id="top_6822424">                            
+                            </ul>
+                        </div>
+                    </label>                    
+        </div>
+    </div>
+        <div   class="bog_copyright">         
+            <p  class="copyright_p" >版权声明：本文为博主原创文章，转载联系 1335608604@qq.com</p>
+        </div>
+
+  
+
+  
+  
+     
+
+
+
+
+<div id="article_content" class="article_content tracking-ad" data-mod=popu_307  data-dsm = "post" >
+        <div class="markdown_views"><h1 id="网页爬虫设计">网页爬虫设计</h1>
+
+<p>项目驱动，需要从网站上爬取文章，并上传至服务器，实现模拟用户发帖。</p>
+
+<blockquote>
+  <p>框架采用Python3，配合爬虫框架Scrapy实现，目前只能抓取静态页，JS+Ajax动态加载的网页见下一篇博客</p>
+</blockquote>
+
+<p><a href="https://github.com/JohonseZhang/Scrapy-Spider-based-on-Python3">GitHub地址</a>：<a href="https://github.com/JohonseZhang/Scrapy-Spider-based-on-Python3">https://github.com/JohonseZhang/Scrapy-Spider-based-on-Python3</a> <br>
+求Star~</p>
+
+<h2 id="项目结构">项目结构</h2>
+
+<p>代码结构图： <br>
+<img src="http://img.blog.csdn.net/20170502184013380?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMzE1NzM1MTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p>
+
+
+
+<h2 id="创建项目">创建项目</h2>
+
+<ul>
+<li>进入指定文件夹，右击空白处&gt;在此处打开命令行窗口</li>
+<li>创建项目</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class=" hljs ">Scrapy startproject DgSpider</code></pre>
+
+
+
+<h2 id="主要代码文件说明">主要代码文件说明</h2>
+
+<ul>
+<li>爬虫主类  ：UrlSpider.py、ContentSpider.py <br>
+ <em>项目包含2个爬虫主类，分别用于爬取文章列表页所有文章的URL、文章详情页具体内容</em></li>
+<li>内容处理类 ：pipelines.py <br>
+ <em>处理内容</em></li>
+<li>传输字段类 ：items.py <br>
+<em>暂存爬取的数据</em></li>
+<li>设置文件 ：settings.py <br>
+<em>用于主要的参数配置</em></li>
+<li>数据库操作：mysqlUtils.py <br>
+  <em>链接操作数据库</em></li>
+</ul>
+
+
+
+<h2 id="代码实现">代码实现</h2>
+
+<ul>
+<li>UrlSpider.py</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class=" hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span>
+
+<span class="hljs-keyword">import</span> scrapy
+<span class="hljs-keyword">from</span> DgSpider.items <span class="hljs-keyword">import</span> DgspiderUrlItem
+<span class="hljs-keyword">from</span> scrapy.selector <span class="hljs-keyword">import</span> Selector
+<span class="hljs-keyword">from</span> DgSpider <span class="hljs-keyword">import</span> urlSettings
+
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DgUrlSpider</span><span class="hljs-params">(scrapy.Spider)</span>:</span>
+    print(<span class="hljs-string">'Spider DgUrlSpider Staring...'</span>)
+
+    <span class="hljs-comment"># 爬虫名 必须静态指定</span>
+    <span class="hljs-comment"># name = urlSettings.SPIDER_NAME</span>
+    name = <span class="hljs-string">'DgUrlSpider'</span>
+
+    <span class="hljs-comment"># 设定域名</span>
+    allowed_domains = [urlSettings.DOMAIN]
+
+    <span class="hljs-comment"># 爬取地址</span>
+    url_list = []
+    <span class="hljs-string">"""一般来说，列表页第一页不符合规则，单独append"""</span>
+    url_list.append(urlSettings.START_LIST_URL)
+    loop = urlSettings.LIST_URL_RULER_LOOP
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>, loop):
+        url = urlSettings.LIST_URL_RULER_PREFIX + str(i) + urlSettings.LIST_URL_RULER_SUFFIX
+        url_list.append(url)
+    start_urls = url_list
+
+    <span class="hljs-comment"># 爬取方法</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse</span><span class="hljs-params">(self, response)</span>:</span>
+
+        <span class="hljs-comment"># sel : 页面源代码</span>
+        sel = Selector(response)
+
+        item_url = DgspiderUrlItem()
+        url_item = []
+
+        <span class="hljs-comment"># XPATH获取url</span>
+        url_list = sel.xpath(urlSettings.POST_URL_XPATH).extract()
+
+        <span class="hljs-comment"># 消除http前缀差异</span>
+        <span class="hljs-keyword">for</span> url <span class="hljs-keyword">in</span> url_list:
+            url = url.replace(<span class="hljs-string">'http:'</span>, <span class="hljs-string">''</span>)
+            url_item.append(<span class="hljs-string">'http:'</span> + url)
+
+        <span class="hljs-comment"># list去重</span>
+        url_item = list(set(url_item))
+        item_url[<span class="hljs-string">'url'</span>] = url_item
+
+        <span class="hljs-keyword">yield</span> item_url
+</code></pre>
+
+<ul>
+<li>ContentSpider.py</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class=" hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span>
+
+<span class="hljs-keyword">import</span> scrapy
+<span class="hljs-keyword">from</span> DgSpider.mysqlUtils <span class="hljs-keyword">import</span> dbhandle_geturl
+<span class="hljs-keyword">from</span> DgSpider.items <span class="hljs-keyword">import</span> DgspiderPostItem
+<span class="hljs-keyword">from</span> scrapy.selector <span class="hljs-keyword">import</span> Selector
+<span class="hljs-keyword">from</span> scrapy.http <span class="hljs-keyword">import</span> Request
+<span class="hljs-keyword">from</span> DgSpider <span class="hljs-keyword">import</span> contentSettings
+<span class="hljs-keyword">from</span> DgSpider <span class="hljs-keyword">import</span> urlSettings
+<span class="hljs-keyword">from</span> DgSpider.mysqlUtils <span class="hljs-keyword">import</span> dbhandle_update_status
+
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DgContentSpider</span><span class="hljs-params">(scrapy.Spider)</span>:</span>
+    print(<span class="hljs-string">'Spider DgContentSpider Staring...'</span>)
+
+    result = dbhandle_geturl(urlSettings.GROUP_ID)
+
+    url = result[<span class="hljs-number">0</span>]
+    spider_name = result[<span class="hljs-number">1</span>]
+    site = result[<span class="hljs-number">2</span>]
+    gid = result[<span class="hljs-number">3</span>]
+    module = result[<span class="hljs-number">4</span>]
+
+    <span class="hljs-comment"># 爬虫名 必须静态指定</span>
+    <span class="hljs-comment"># name = contentSettings.SPIDER_NAME</span>
+    name = <span class="hljs-string">'DgContentSpider'</span>
+
+    <span class="hljs-comment"># 设定爬取域名范围</span>
+    allowed_domains = [site]
+
+    <span class="hljs-comment"># 爬取地址</span>
+    <span class="hljs-comment"># start_urls = ['http://www.mama.cn/baby/art/20140829/774422.html']</span>
+    start_urls = [url]
+
+    start_urls_tmp = []
+    <span class="hljs-string">"""构造分页序列，一般来说遵循规则 url.html,url_2.html,url_3.html，并且url.html也写为url_1.html"""</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">6</span>, <span class="hljs-number">1</span>, -<span class="hljs-number">1</span>):
+        start_single = url[:-<span class="hljs-number">5</span>]
+        start_urls_tmp.append(start_single+<span class="hljs-string">"_"</span>+str(i)+<span class="hljs-string">".html"</span>)
+
+    <span class="hljs-comment"># 更新状态</span>
+    <span class="hljs-string">"""对于爬去网页，无论是否爬取成功都将设置status为1，避免死循环"""</span>
+    dbhandle_update_status(url, <span class="hljs-number">1</span>)
+
+    <span class="hljs-comment"># 爬取方法</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse</span><span class="hljs-params">(self, response)</span>:</span>
+        item = DgspiderPostItem()
+
+        <span class="hljs-comment"># sel : 页面源代码</span>
+        sel = Selector(response)
+
+        item[<span class="hljs-string">'url'</span>] = DgContentSpider.url
+
+        <span class="hljs-comment"># 对于title, &lt;div&gt;&lt;h1&gt;&lt;span aaa&gt;&lt;span&gt;标题1&lt;/h1&gt;&lt;/div&gt;,使用下列方法取得</span>
+        data_title_tmp = sel.xpath(contentSettings.POST_TITLE_XPATH)
+        item[<span class="hljs-string">'title'</span>] = data_title_tmp.xpath(<span class="hljs-string">'string(.)'</span>).extract()
+
+        item[<span class="hljs-string">'text'</span>] = sel.xpath(contentSettings.POST_CONTENT_XPATH).extract()
+
+        <span class="hljs-keyword">yield</span> item
+
+        <span class="hljs-keyword">if</span> self.start_urls_tmp:
+            url = self.start_urls_tmp.pop()
+            <span class="hljs-keyword">yield</span> Request(url, callback=self.parse)
+</code></pre>
+
+<ul>
+<li>pipelines.py</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class=" hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span>
+
+<span class="hljs-comment"># Define your item pipelines here</span>
+<span class="hljs-comment"># If you have many piplelines, all should be init here</span>
+<span class="hljs-comment"># and use IF to judge them</span>
+<span class="hljs-comment">#</span>
+<span class="hljs-comment"># DOUGUO Spider pipelines</span>
+<span class="hljs-comment"># @author zhangjianfei</span>
+<span class="hljs-comment"># @date 2017/04/13</span>
+
+<span class="hljs-keyword">import</span> re
+<span class="hljs-keyword">import</span> urllib.request
+<span class="hljs-keyword">from</span> DgSpider <span class="hljs-keyword">import</span> urlSettings
+<span class="hljs-keyword">from</span> DgSpider <span class="hljs-keyword">import</span> contentSettings
+<span class="hljs-keyword">from</span> DgSpider.mysqlUtils <span class="hljs-keyword">import</span> dbhandle_insert_content
+<span class="hljs-keyword">from</span> DgSpider.uploadUtils <span class="hljs-keyword">import</span> uploadImage
+<span class="hljs-keyword">from</span> DgSpider.mysqlUtils <span class="hljs-keyword">import</span> dbhandle_online
+<span class="hljs-keyword">from</span> DgSpider.mysqlUtils <span class="hljs-keyword">import</span> dbhandle_update_status
+<span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup
+<span class="hljs-keyword">from</span> DgSpider.PostHandle <span class="hljs-keyword">import</span> post_handel
+<span class="hljs-keyword">from</span> DgSpider.commonUtils <span class="hljs-keyword">import</span> get_random_user
+<span class="hljs-keyword">from</span> DgSpider.commonUtils <span class="hljs-keyword">import</span> get_linkmd5id
+
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DgPipeline</span><span class="hljs-params">(object)</span>:</span>
+    <span class="hljs-comment"># post构造reply</span>
+    cs = []
+
+    <span class="hljs-comment"># 帖子title</span>
+    title = <span class="hljs-string">''</span>
+
+    <span class="hljs-comment"># 帖子文本</span>
+    text = <span class="hljs-string">''</span>
+
+    <span class="hljs-comment"># 当前爬取的url</span>
+    url = <span class="hljs-string">''</span>
+
+    <span class="hljs-comment"># 随机用户ID</span>
+    user_id = <span class="hljs-string">''</span>
+
+    <span class="hljs-comment"># 图片flag</span>
+    has_img = <span class="hljs-number">0</span>
+
+    <span class="hljs-comment"># get title flag</span>
+    get_title_flag = <span class="hljs-number">0</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self)</span>:</span>
+        DgPipeline.user_id = get_random_user(contentSettings.CREATE_POST_USER)
+
+    <span class="hljs-comment"># process the data</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">process_item</span><span class="hljs-params">(self, item, spider)</span>:</span>
+        self.get_title_flag += <span class="hljs-number">1</span>
+
+        <span class="hljs-comment"># pipeline for content</span>
+        <span class="hljs-keyword">if</span> spider.name == contentSettings.SPIDER_NAME:
+
+            <span class="hljs-comment"># 获取当前网页url</span>
+            DgPipeline.url = item[<span class="hljs-string">'url'</span>]
+
+            <span class="hljs-comment"># 获取post title</span>
+            <span class="hljs-keyword">if</span> len(item[<span class="hljs-string">'title'</span>]) == <span class="hljs-number">0</span>:
+                title_tmp = <span class="hljs-string">''</span>
+            <span class="hljs-keyword">else</span>:
+                title_tmp = item[<span class="hljs-string">'title'</span>][<span class="hljs-number">0</span>]
+
+            <span class="hljs-comment"># 替换标题中可能会引起 sql syntax 的符号</span>
+            <span class="hljs-comment"># 对于分页的文章，只取得第一页的标题</span>
+            <span class="hljs-keyword">if</span> self.get_title_flag == <span class="hljs-number">1</span>:
+
+                <span class="hljs-comment"># 使用beautifulSoup格什化标题</span>
+                soup_title = BeautifulSoup(title_tmp, <span class="hljs-string">"lxml"</span>)
+                title = <span class="hljs-string">''</span>
+                <span class="hljs-comment"># 对于bs之后的html树形结构，不使用.prettify()，对于bs, prettify后每一个标签自动换行，造成多个、</span>
+                <span class="hljs-comment"># 多行的空格、换行，使用stripped_strings获取文本</span>
+                <span class="hljs-keyword">for</span> string <span class="hljs-keyword">in</span> soup_title.stripped_strings:
+                    title += string
+
+                title = title.replace(<span class="hljs-string">"'"</span>, <span class="hljs-string">"”"</span>).replace(<span class="hljs-string">'"'</span>, <span class="hljs-string">'“'</span>)
+                DgPipeline.title = title
+
+            <span class="hljs-comment"># 获取正post内容</span>
+            <span class="hljs-keyword">if</span> len(item[<span class="hljs-string">'text'</span>]) == <span class="hljs-number">0</span>:
+                text_temp = <span class="hljs-string">''</span>
+            <span class="hljs-keyword">else</span>:
+                text_temp = item[<span class="hljs-string">'text'</span>][<span class="hljs-number">0</span>]
+
+            <span class="hljs-comment"># 获取图片</span>
+            reg_img = re.compile(<span class="hljs-string">r'&lt;img.*&gt;'</span>)
+            imgs = reg_img.findall(text_temp)
+            <span class="hljs-keyword">for</span> img <span class="hljs-keyword">in</span> imgs:
+                DgPipeline.has_img = <span class="hljs-number">1</span>
+
+                <span class="hljs-comment"># matchObj = re.search('.*src="(.*)"{2}.*', img, re.M | re.I)</span>
+                match_obj = re.search(<span class="hljs-string">'.*src="(.*)".*'</span>, img, re.M | re.I)
+                img_url_tmp = match_obj.group(<span class="hljs-number">1</span>)
+
+                <span class="hljs-comment"># 去除所有Http:标签</span>
+                img_url_tmp = img_url_tmp.replace(<span class="hljs-string">"http:"</span>, <span class="hljs-string">""</span>)
+
+                <span class="hljs-comment"># 对于&lt;img src="http://a.jpg" title="a.jpg"&gt;这种情况单独处理</span>
+                imgUrl_tmp_list = img_url_tmp.split(<span class="hljs-string">'"'</span>)
+                img_url_tmp = imgUrl_tmp_list[<span class="hljs-number">0</span>]
+
+                <span class="hljs-comment"># 加入http</span>
+                imgUrl = <span class="hljs-string">'http:'</span> + img_url_tmp
+
+                list_name = imgUrl.split(<span class="hljs-string">'/'</span>)
+                file_name = list_name[len(list_name)-<span class="hljs-number">1</span>]
+
+                <span class="hljs-comment"># if os.path.exists(settings.IMAGES_STORE):</span>
+                <span class="hljs-comment">#     os.makedirs(settings.IMAGES_STORE)</span>
+
+                <span class="hljs-comment"># 获取图片本地存储路径</span>
+                file_path = contentSettings.IMAGES_STORE + file_name
+                <span class="hljs-comment"># 获取图片并上传至本地</span>
+                urllib.request.urlretrieve(imgUrl, file_path)
+                upload_img_result_json = uploadImage(file_path, <span class="hljs-string">'image/jpeg'</span>, DgPipeline.user_id)
+                <span class="hljs-comment"># 获取上传之后返回的服务器图片路径、宽、高</span>
+                img_u = upload_img_result_json[<span class="hljs-string">'result'</span>][<span class="hljs-string">'image_url'</span>]
+                img_w = upload_img_result_json[<span class="hljs-string">'result'</span>][<span class="hljs-string">'w'</span>]
+                img_h = upload_img_result_json[<span class="hljs-string">'result'</span>][<span class="hljs-string">'h'</span>]
+                img_upload_flag = str(img_u)+<span class="hljs-string">';'</span>+str(img_w)+<span class="hljs-string">';'</span>+str(img_h)
+
+                <span class="hljs-comment"># 在图片前后插入字符标记</span>
+                text_temp = text_temp.replace(img, <span class="hljs-string">'[dgimg]'</span> + img_upload_flag + <span class="hljs-string">'[/dgimg]'</span>)
+
+            <span class="hljs-comment"># 使用beautifulSoup格什化HTML</span>
+            soup = BeautifulSoup(text_temp, <span class="hljs-string">"lxml"</span>)
+            text = <span class="hljs-string">''</span>
+            <span class="hljs-comment"># 对于bs之后的html树形结构，不使用.prettify()，对于bs, prettify后每一个标签自动换行，造成多个、</span>
+            <span class="hljs-comment"># 多行的空格、换行</span>
+            <span class="hljs-keyword">for</span> string <span class="hljs-keyword">in</span> soup.stripped_strings:
+                text += string + <span class="hljs-string">'\n'</span>
+
+            <span class="hljs-comment"># 替换因为双引号为中文双引号，避免 mysql syntax</span>
+            DgPipeline.text = self.text + text.replace(<span class="hljs-string">'"'</span>, <span class="hljs-string">'“'</span>)
+
+            <span class="hljs-comment"># 对于分页的文章，每一页之间加入换行</span>
+            <span class="hljs-comment"># DgPipeline.text += (DgPipeline.text + '\n')</span>
+
+        <span class="hljs-comment"># pipeline for url</span>
+        <span class="hljs-keyword">elif</span> spider.name == urlSettings.SPIDER_NAME:
+            db_object = dbhandle_online()
+            cursor = db_object.cursor()
+
+            <span class="hljs-keyword">for</span> url <span class="hljs-keyword">in</span> item[<span class="hljs-string">'url'</span>]:
+                linkmd5id = get_linkmd5id(url)
+                spider_name = contentSettings.SPIDER_NAME
+                site = urlSettings.DOMAIN
+                gid = urlSettings.GROUP_ID
+                module = urlSettings.MODULE
+                status = <span class="hljs-string">'0'</span>
+                sql_search = <span class="hljs-string">'select md5_url from dg_spider.dg_spider_post where md5_url="%s"'</span> % linkmd5id
+                sql = <span class="hljs-string">'insert into dg_spider.dg_spider_post(md5_url, url, spider_name, site, gid, module, status) '</span> \
+                      <span class="hljs-string">'values("%s", "%s", "%s", "%s", "%s", "%s", "%s")'</span> \
+                      % (linkmd5id, url, spider_name, site, gid, module, status)
+                <span class="hljs-keyword">try</span>:
+                    <span class="hljs-comment"># 判断url是否存在,如果不存在，则插入</span>
+                    cursor.execute(sql_search)
+                    result_search = cursor.fetchone()
+                    <span class="hljs-keyword">if</span> result_search <span class="hljs-keyword">is</span> <span class="hljs-keyword">None</span> <span class="hljs-keyword">or</span> result_search[<span class="hljs-number">0</span>].strip() == <span class="hljs-string">''</span>:
+                        cursor.execute(sql)
+                        result = cursor.fetchone()
+                        db_object.commit()
+                <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+                    print(<span class="hljs-string">"&gt;&gt;&gt; catch exception !"</span>)
+                    print(e)
+                    db_object.rollback()
+
+        <span class="hljs-keyword">return</span> item
+
+    <span class="hljs-comment"># spider开启时被调用</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">open_spider</span><span class="hljs-params">(self, spider)</span>:</span>
+        <span class="hljs-keyword">pass</span>
+
+    <span class="hljs-comment"># sipder 关闭时被调用</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">close_spider</span><span class="hljs-params">(self, spider)</span>:</span>
+        <span class="hljs-keyword">if</span> spider.name == contentSettings.SPIDER_NAME:
+            <span class="hljs-comment"># 数据入库：235</span>
+            url = DgPipeline.url
+            title = DgPipeline.title
+            content = DgPipeline.text
+            user_id = DgPipeline.user_id
+            dbhandle_insert_content(url, title, content, user_id, DgPipeline.has_img)
+
+            <span class="hljs-comment"># 更新status状态为1（已经爬取过内容）</span>
+            <span class="hljs-string">"""此项已在spider启动时设置"""</span>
+            <span class="hljs-comment"># dbhandle_update_status(url, 1)</span>
+
+            <span class="hljs-comment"># 处理文本、设置status、上传至dgCommunity.dg_post</span>
+            <span class="hljs-comment"># 如果判断has_img为1，那么上传帖子</span>
+            <span class="hljs-keyword">if</span> DgPipeline.has_img == <span class="hljs-number">1</span>:
+                <span class="hljs-keyword">if</span> title.strip() != <span class="hljs-string">''</span> <span class="hljs-keyword">and</span> content.strip() != <span class="hljs-string">''</span>:
+                    spider.logger.info(<span class="hljs-string">'has_img=1,title and content is not null! Uploading post into db...'</span>)
+                    post_handel(url)
+                <span class="hljs-keyword">else</span>:
+                    spider.logger.info(<span class="hljs-string">'has_img=1,but title or content is null! ready to exit...'</span>)
+                <span class="hljs-keyword">pass</span>
+            <span class="hljs-keyword">else</span>:
+                spider.logger.info(<span class="hljs-string">'has_img=0, changing status and ready to exit...'</span>)
+                <span class="hljs-keyword">pass</span>
+
+        <span class="hljs-keyword">elif</span> spider.name == urlSettings.SPIDER_NAME:
+            <span class="hljs-keyword">pass</span>
+
+</code></pre>
+
+<ul>
+<li>items.py</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class=" hljs haskell"><span class="hljs-preprocessor"># -*- coding: utf-8 -*-</span>
+<span class="hljs-preprocessor"># Define here the models for your scraped items</span>
+<span class="hljs-preprocessor"># douguo Spider Item</span>
+<span class="hljs-preprocessor"># @author zhangjianfei</span>
+<span class="hljs-preprocessor"># @date 2017/04/07</span>
+<span class="hljs-import"><span class="hljs-keyword">import</span> scrapy</span>
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">DgspiderUrlItem</span><span class="hljs-container">(<span class="hljs-title">scrapy</span>.<span class="hljs-type">Item</span>)</span>:
+    url = scrapy.<span class="hljs-type">Field</span><span class="hljs-container">()</span>
+
+<span class="hljs-keyword">class</span> <span class="hljs-type">DgspiderPostItem</span><span class="hljs-container">(<span class="hljs-title">scrapy</span>.<span class="hljs-type">Item</span>)</span>:
+    url = scrapy.<span class="hljs-type">Field</span><span class="hljs-container">()</span>
+    title = scrapy.<span class="hljs-type">Field</span><span class="hljs-container">()</span>
+    text = scrapy.<span class="hljs-type">Field</span><span class="hljs-container">()</span>
+</span></code></pre>
+
+<ul>
+<li>settings.py <br>
+ <em>这个文件只需要更改或加上特定的配置项</em></li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class=" hljs vala">BOT_NAME = <span class="hljs-string">'DgSpider'</span>
+
+SPIDER_MODULES = [<span class="hljs-string">'DgSpider.spiders'</span>]
+NEWSPIDER_MODULE = <span class="hljs-string">'DgSpider.spiders'</span>
+
+<span class="hljs-preprocessor"># 注册PIPELINES</span>
+ITEM_PIPELINES = {
+    <span class="hljs-string">'DgSpider.pipelines.DgPipeline'</span>: <span class="hljs-number">1</span>
+}</code></pre>
+
+<ul>
+<li>mysqlUtils.py</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class=" hljs python"><span class="hljs-keyword">import</span> pymysql
+<span class="hljs-keyword">import</span> pymysql.cursors
+<span class="hljs-keyword">import</span> os
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">dbhandle_online</span><span class="hljs-params">()</span>:</span>
+    host = <span class="hljs-string">'192.168.1.235'</span>
+    user = <span class="hljs-string">'root'</span>
+    passwd = <span class="hljs-string">'douguo2015'</span>
+    charset = <span class="hljs-string">'utf8'</span>
+    conn = pymysql.connect(
+        host=host,
+        user=user,
+        passwd=passwd,
+        charset=charset,
+        use_unicode=<span class="hljs-keyword">False</span>
+    )
+    <span class="hljs-keyword">return</span> conn
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">dbhandle_local</span><span class="hljs-params">()</span>:</span>
+    host = <span class="hljs-string">'192.168.1.235'</span>
+    user = <span class="hljs-string">'root'</span>
+    passwd = <span class="hljs-string">'douguo2015'</span>
+    charset = <span class="hljs-string">'utf8'</span>
+    conn = pymysql.connect(
+        host=host,
+        user=user,
+        passwd=passwd,
+        charset=charset,
+        use_unicode=<span class="hljs-keyword">True</span>
+        <span class="hljs-comment"># use_unicode=False</span>
+    )
+    <span class="hljs-keyword">return</span> conn
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">dbhandle_geturl</span><span class="hljs-params">(gid)</span>:</span>
+    host = <span class="hljs-string">'192.168.1.235'</span>
+    user = <span class="hljs-string">'root'</span>
+    passwd = <span class="hljs-string">'douguo2015'</span>
+    charset = <span class="hljs-string">'utf8'</span>
+    conn = pymysql.connect(
+        host=host,
+        user=user,
+        passwd=passwd,
+        charset=charset,
+        use_unicode=<span class="hljs-keyword">False</span>
+    )
+    cursor = conn.cursor()
+    sql = <span class="hljs-string">'select url,spider_name,site,gid,module from dg_spider.dg_spider_post where status=0 and gid=%s limit 1'</span> % gid
+    <span class="hljs-keyword">try</span>:
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        conn.commit()
+    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+        print(<span class="hljs-string">"***** exception"</span>)
+        print(e)
+        conn.rollback()
+
+    <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-keyword">None</span>:
+        os._exit(<span class="hljs-number">0</span>)
+    <span class="hljs-keyword">else</span>:
+        url = result[<span class="hljs-number">0</span>]
+        spider_name = result[<span class="hljs-number">1</span>]
+        site = result[<span class="hljs-number">2</span>]
+        gid = result[<span class="hljs-number">3</span>]
+        module = result[<span class="hljs-number">4</span>]
+        <span class="hljs-keyword">return</span> url.decode(), spider_name.decode(), site.decode(), gid.decode(), module.decode()
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">dbhandle_insert_content</span><span class="hljs-params">(url, title, content, user_id, has_img)</span>:</span>
+    host = <span class="hljs-string">'192.168.1.235'</span>
+    user = <span class="hljs-string">'root'</span>
+    passwd = <span class="hljs-string">'douguo2015'</span>
+    charset = <span class="hljs-string">'utf8'</span>
+    conn = pymysql.connect(
+        host=host,
+        user=user,
+        passwd=passwd,
+        charset=charset,
+        use_unicode=<span class="hljs-keyword">False</span>
+    )
+    cur = conn.cursor()
+
+    <span class="hljs-comment"># 如果标题或者内容为空，那么程序将退出，篇文章将会作废并将status设置为1，爬虫继续向下运行获得新的URl</span>
+    <span class="hljs-keyword">if</span> content.strip() == <span class="hljs-string">''</span> <span class="hljs-keyword">or</span> title.strip() == <span class="hljs-string">''</span>:
+        sql_fail = <span class="hljs-string">'update dg_spider.dg_spider_post set status="%s" where url="%s" '</span> % (<span class="hljs-string">'1'</span>, url)
+        <span class="hljs-keyword">try</span>:
+            cur.execute(sql_fail)
+            result = cur.fetchone()
+            conn.commit()
+        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+            print(e)
+            conn.rollback()
+        os._exit(<span class="hljs-number">0</span>)
+
+    sql = <span class="hljs-string">'update dg_spider.dg_spider_post set title="%s",content="%s",user_id="%s",has_img="%s" where url="%s" '</span> \
+          % (title, content, user_id, has_img, url)
+
+    <span class="hljs-keyword">try</span>:
+        cur.execute(sql)
+        result = cur.fetchone()
+        conn.commit()
+    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+        print(e)
+        conn.rollback()
+    <span class="hljs-keyword">return</span> result
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">dbhandle_update_status</span><span class="hljs-params">(url, status)</span>:</span>
+    host = <span class="hljs-string">'192.168.1.235'</span>
+    user = <span class="hljs-string">'root'</span>
+    passwd = <span class="hljs-string">'douguo2015'</span>
+    charset = <span class="hljs-string">'utf8'</span>
+    conn = pymysql.connect(
+        host=host,
+        user=user,
+        passwd=passwd,
+        charset=charset,
+        use_unicode=<span class="hljs-keyword">False</span>
+    )
+    cur = conn.cursor()
+    sql = <span class="hljs-string">'update dg_spider.dg_spider_post set status="%s" where url="%s" '</span> \
+          % (status, url)
+    <span class="hljs-keyword">try</span>:
+        cur.execute(sql)
+        result = cur.fetchone()
+        conn.commit()
+    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+        print(e)
+        conn.rollback()
+    <span class="hljs-keyword">return</span> result
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">dbhandle_get_content</span><span class="hljs-params">(url)</span>:</span>
+    host = <span class="hljs-string">'192.168.1.235'</span>
+    user = <span class="hljs-string">'root'</span>
+    passwd = <span class="hljs-string">'douguo2015'</span>
+    charset = <span class="hljs-string">'utf8'</span>
+    conn = pymysql.connect(
+        host=host,
+        user=user,
+        passwd=passwd,
+        charset=charset,
+        use_unicode=<span class="hljs-keyword">False</span>
+    )
+    cursor = conn.cursor()
+    sql = <span class="hljs-string">'select title,content,user_id,gid from dg_spider.dg_spider_post where status=1 and url="%s" limit 1'</span> % url
+    <span class="hljs-keyword">try</span>:
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        conn.commit()
+    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+        print(<span class="hljs-string">"***** exception"</span>)
+        print(e)
+        conn.rollback()
+
+    <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-keyword">None</span>:
+        os._exit(<span class="hljs-number">1</span>)
+
+    title = result[<span class="hljs-number">0</span>]
+    content = result[<span class="hljs-number">1</span>]
+    user_id = result[<span class="hljs-number">2</span>]
+    gid = result[<span class="hljs-number">3</span>]
+    <span class="hljs-keyword">return</span> title.decode(), content.decode(), user_id.decode(), gid.decode()
+
+
+<span class="hljs-comment"># 获取爬虫初始化参数</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">dbhandle_get_spider_param</span><span class="hljs-params">(url)</span>:</span>
+    host = <span class="hljs-string">'192.168.1.235'</span>
+    user = <span class="hljs-string">'root'</span>
+    passwd = <span class="hljs-string">'douguo2015'</span>
+    charset = <span class="hljs-string">'utf8'</span>
+    conn = pymysql.connect(
+        host=host,
+        user=user,
+        passwd=passwd,
+        charset=charset,
+        use_unicode=<span class="hljs-keyword">False</span>
+    )
+    cursor = conn.cursor()
+    sql = <span class="hljs-string">'select title,content,user_id,gid from dg_spider.dg_spider_post where status=0 and url="%s" limit 1'</span> % url
+    result = <span class="hljs-string">''</span>
+    <span class="hljs-keyword">try</span>:
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        conn.commit()
+    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+        print(<span class="hljs-string">"***** exception"</span>)
+        print(e)
+        conn.rollback()
+    title = result[<span class="hljs-number">0</span>]
+    content = result[<span class="hljs-number">1</span>]
+    user_id = result[<span class="hljs-number">2</span>]
+    gid = result[<span class="hljs-number">3</span>]
+    <span class="hljs-keyword">return</span> title.decode(), content.decode(), user_id.decode(), gid.decode()
+</code></pre>
+
+<ul>
+<li><p>一些特别的常亮及参数，也是用py文件加入</p>
+
+<p>urlSettings.py:</p></li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class=" hljs python"><span class="hljs-comment"># 爬取域名</span>
+DOMAIN = <span class="hljs-string">'eastlady.cn'</span>
+
+<span class="hljs-comment"># 爬虫名</span>
+<span class="hljs-string">""" URL爬虫模块名，不可变 """</span>
+SPIDER_NAME = <span class="hljs-string">'DgUrlSpider'</span>
+
+GROUP_ID = <span class="hljs-string">'33'</span>
+
+MODULE = <span class="hljs-string">'999'</span>
+
+<span class="hljs-comment"># 文章列表页起始爬取URL</span>
+START_LIST_URL = <span class="hljs-string">'http://www.eastlady.cn/emotion/pxgx/1.html'</span>
+
+<span class="hljs-comment"># 文章列表循环规则</span>
+LIST_URL_RULER_PREFIX = <span class="hljs-string">'http://www.eastlady.cn/emotion/pxgx/'</span>
+LIST_URL_RULER_SUFFIX = <span class="hljs-string">'.html'</span>
+LIST_URL_RULER_LOOP = <span class="hljs-number">30</span>
+
+<span class="hljs-comment"># 文章URL爬取规则XPATH</span>
+POST_URL_XPATH = <span class="hljs-string">'//div[@class="article_list"]/ul/li/span[1]/a[last()]/@href'</span></code></pre>
+
+<p>contentSetting:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs vala"><span class="hljs-preprocessor"># -*- coding: utf-8 -*-</span>
+
+<span class="hljs-preprocessor"># Scrapy settings for DgSpider project</span>
+
+<span class="hljs-preprocessor"># 图片储存</span>
+IMAGES_STORE = <span class="hljs-string">'D:\\pics\\jfss\\'</span>
+
+<span class="hljs-preprocessor"># 爬取域名</span>
+DOMAIN = <span class="hljs-string">'nrsfh.com'</span>
+
+<span class="hljs-preprocessor"># 图片域名前缀</span>
+DOMAIN_HTTP = <span class="hljs-string">"http:"</span>
+
+<span class="hljs-preprocessor"># 随机发帖用户</span>
+CREATE_POST_USER = <span class="hljs-string">'37619,18441390'</span>
+
+<span class="hljs-preprocessor"># 爬虫名</span>
+SPIDER_NAME = <span class="hljs-string">'DgContentSpider'</span>
+
+<span class="hljs-preprocessor"># 文章URL爬取规则XPATH</span>
+POST_TITLE_XPATH = <span class="hljs-string">'//div[@class="title"]'</span>
+POST_CONTENT_XPATH = <span class="hljs-string">'//div[@class="bodycss"]'</span>
+</code></pre>
+
+
+
+<h2 id="启动爬虫">启动爬虫</h2>
+
+<p>进入爬虫代码所在的文件夹，右击：在此打开命令行窗口，先执行：</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs ">Scrapy crawl UrlSpider</code></pre>
+
+<p>进行爬取所有的URL，并入库 <br>
+再执行：</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs ">Scrapy crawl ContentSpider</code></pre>
+
+<p>从数据库中读取URL，抓取网页内容，入库</p>
+
+<p>当然，也可以洗衣歌windos批处理脚本，持续不断的执行Scrapy crawl ContentSpider：</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs dos">@<span class="hljs-keyword">echo</span> DOUGUO window Spider
+<span class="hljs-keyword">cd</span> D:\Scrapy\DgSpider
+<span class="hljs-flow">for</span> /l <span class="hljs-envvar">%%i</span> <span class="hljs-flow">in</span> (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">7000</span>) <span class="hljs-flow">do</span> scrapy crawl DgContentSpider
+:end
+@<span class="hljs-keyword">echo</span> SUCCESS! PRESS ANAY KEY TO <span class="hljs-flow">EXIT</span>! 
+@<span class="hljs-keyword">Pause</span>&gt;<span class="hljs-stream">nul</span></code></pre>
+
+<p>当然，这种方式比较笨拙，最好还是启用cmdline，加入多线程，这里不说明</p>
+
+<p>处理完上面的所有步骤，就能成功地抓取到网页数据： <br>
+<img src="http://img.blog.csdn.net/20170502191300728?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMzE1NzM1MTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p></div>
+        <script  type="text/javascript">
+            $(function () {
+                $('pre.prettyprint code').each(function () {
+                    var lines = $(this).text().split('\n').length;
+                    var $numbering = $('<ul/>').addClass('pre-numbering').hide();
+                    $(this).addClass('has-numbering').parent().append($numbering);
+                    for (i = 1; i <= lines; i++) {
+                        $numbering.append($('<li/>').text(i));
+                    };
+                    $numbering.fadeIn(1700);
+                });
+            });
+        </script>
+   
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        <div id="digg" ArticleId="71107162" >
+            <dl id="btnDigg" class="digg digg_disable"  onclick="btndigga();">
+               
+                 <dt>顶</dt>
+                <dd>2</dd>
+            </dl>
+           
+              
+            <dl id="btnBury" class="digg digg_disable"  onclick="btnburya();">
+              
+                  <dt>踩</dt>
+                <dd>0</dd>               
+            </dl>
+            
+        </div>
+     <div class="tracking-ad" data-mod="popu_222"><a href="javascript:void(0);" >&nbsp;</a>   </div>
+    <div class="tracking-ad" data-mod="popu_223"> <a href="javascript:void(0);" >&nbsp;</a></div>
+    <script type="text/javascript">
+        function btndigga() {
+            $(".tracking-ad[data-mod='popu_222'] a").click();
+        }
+        function btnburya() {
+            $(".tracking-ad[data-mod='popu_223'] a").click();
+        }
+            </script>
+
+   <ul class="article_next_prev">
+                <li class="prev_article"><span  onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_shangyipian']);location.href='http://blog.csdn.net/qq_31573519/article/details/71037891';">上一篇</span><a href="http://blog.csdn.net/qq_31573519/article/details/71037891" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_shangyipian'])">Hadoop启动操作过程及常见错误</a></li>
+                <li class="next_article"><span onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_xiayipian']);location.href='http://blog.csdn.net/qq_31573519/article/details/71750828';">下一篇</span><a href="http://blog.csdn.net/qq_31573519/article/details/71750828" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_xiayipian'])">windows将本地项目上传到github仓库</a></li>
+    </ul>
+
+    <div style="clear:both; height:10px;"></div>
+
+
+            <div class="similar_article"   >
+                    <h4></h4>
+                    <div class="similar_c"style="margin:20px 0px 0px 0px">
+                        <div class="similar_c_t">
+                          &nbsp;&nbsp;相关文章推荐
+                        </div>
+                   
+                        <div class="similar_wrap tracking-ad" data-mod="popu_36"  style="max-height:250px">                       
+                            <ul class="similar_list fl">    
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/c406495762/article/details/60156205" title="Python3网络爬虫(五)：Python3安装Scrapy" strategy="BlogCommendFromQuerySearch_0" target="_blank">Python3网络爬虫(五)：Python3安装Scrapy</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/huiyiCourse/series_detail/74?utm_source=blog7" title="MySQL在微信支付下的高可用运营--莫晓东" strategy="undefined" target="_blank">MySQL在微信支付下的高可用运营--莫晓东</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/zniahfag/article/details/51439768" title="Python scrapy 实现网页爬虫" strategy="BlogCommendFromCsdn_1" target="_blank">Python scrapy 实现网页爬虫</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/huiyiCourse/series_detail/73?utm_source=blog7" title="容器技术在58同城的实践--姚远" strategy="undefined" target="_blank">容器技术在58同城的实践--姚远</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/liubo080852/article/details/50556348" title="Python  爬虫 正则抽取网页数据和Scrapy简单使用" strategy="BlogCommendFromCsdn_2" target="_blank">Python  爬虫 正则抽取网页数据和Scrapy简单使用</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/huiyiCourse/series_detail/73?utm_source=blog7" title="SDCC 2017之容器技术实战线上峰会" strategy="undefined" target="_blank">SDCC 2017之容器技术实战线上峰会</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/iloveyin/article/details/41309679" title="Scrapy系列教程（3）------Spider（爬虫核心，定义链接关系和网页信息抽取）" strategy="BlogCommendFromCsdn_3" target="_blank">Scrapy系列教程（3）------Spider（爬虫核心，定义链接关系和网页信息抽取）</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/huiyiCourse/series_detail/74?utm_source=blog7" title="SDCC 2017之数据库技术实战线上峰会" strategy="undefined" target="_blank">SDCC 2017之数据库技术实战线上峰会</a>
+                                   </li>
+                            </ul>
+                              <ul class="similar_list fr">      
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/u011781521/article/details/70186740" title="Python爬虫系列之----Scrapy(五)网页提取的三种方式(正则,Beautiful Soup,Lxml)" strategy="BlogCommendFromCsdn_4" target="_blank">Python爬虫系列之----Scrapy(五)网页提取的三种方式(正则,Beautiful Soup,Lxml)</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/huiyiCourse/series_detail/73?utm_source=blog7" title="腾讯云容器服务架构实现介绍--董晓杰" strategy="undefined" target="_blank">腾讯云容器服务架构实现介绍--董晓杰</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/qq_29883591/article/details/53467125" title="python3实现网络爬虫（7）-- 使用ip代理抓取网页" strategy="BlogCommendFromCsdn_5" target="_blank">python3实现网络爬虫（7）-- 使用ip代理抓取网页</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://edu.csdn.net/huiyiCourse/series_detail/74?utm_source=home7" title="微博热点事件背后的数据库运维心得--张冬洪" strategy="undefined" target="_blank">微博热点事件背后的数据库运维心得--张冬洪</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/u011829453/article/details/76474723" title="python3+Scrapy环境配置外送两个小爬虫" strategy="BlogCommendFromCsdn_6" target="_blank">python3+Scrapy环境配置外送两个小爬虫</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/dangsh_/article/details/78587729" title="python3 scrapy 入门级爬虫 爬取数万条拉勾网职位信息" strategy="BlogCommendFromCsdn_7" target="_blank">python3 scrapy 入门级爬虫 爬取数万条拉勾网职位信息</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/xudailong_blog/article/details/75577075" title="python3 [爬虫入门实战]scrapy爬取盘多多五百万数据并存mongoDB" strategy="BlogCommendFromCsdn_8" target="_blank">python3 [爬虫入门实战]scrapy爬取盘多多五百万数据并存mongoDB</a>
+                                   </li>
+                                   <li>
+                                       <em>•</em>
+                                       <a href="http://blog.csdn.net/snake_son/article/details/75577992" title="python3 [爬虫入门实战]scrapy爬取盘多多五百万数据并存mongoDB" strategy="BlogCommendFromCsdn_9" target="_blank">python3 [爬虫入门实战]scrapy爬取盘多多五百万数据并存mongoDB</a>
+                                   </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>   
+   
+      
+</div>
+
+     <div>
+           
+
+       
+                           
+            <!-- 广告位：PC端-博客内容页-banner1-960*90 --> 
+           
+         <!-- 广告位：PC端-博客详情页底部banner-960*90 -->
+            <script>
+                (function() {
+                    var s = "_" + Math.random().toString(36).slice(2);
+                    document.write('<div id="' + s + '"></div>');
+                    (window.slotbydup=window.slotbydup || []).push({
+                        id: '4770928',
+                        container: s,
+                        size: '960,90',
+                        display: 'inlay-fix'
+                    });
+                })();
+            </script>
+    </div>
+
+<div id="suggest"></div>
+         <script  language="javascript" type='text/javascript'>     
+             $(function(){
+                 $.get("/qq_31573519/svc/GetSuggestContent/71107162",function(data){
+                     $("#suggest").html(data);
+                 });     
+             });             
+         </script>  
+
+
+
+
+            
+                                    
+            
+                                    
+
+        <!-- 广告位开始 -->
+        <!-- 广告位结束 -->
+
+
+
+<div class="comment_class">
+    <div id="comment_title" class="panel_head">
+        <span class="see_comment">查看评论</span><a name="comments"></a></div>
+    <div id="comment_list">
+    </div>
+    <div id="comment_bar">
+    </div>
+    <div id="comment_form">
+    </div>
+    <div class="announce">
+        * 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+</div>
+
+<script type="text/javascript">
+    var fileName = '71107162';
+    var commentscount = 0;
+    var islock = false
+</script>
+
+    <div id="ad_bot">
+    </div>
+<div id="report_dialog">
+</div>
+
+<div id="d-top"  style="bottom:60px;">
+
+
+        <a id="quick-reply" class="btn btn-top q-reply" title="快速回复" style="display:none;">
+            <img src="http://static.blog.csdn.net/images/blog-icon-reply.png" alt="快速回复">
+        </a>    
+    <a id="d-top-a" class="btn btn-top backtop"  style="display: none;" title="返回顶部" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_huidaodingbu'])" style="">         
+         <img src="http://static.blog.csdn.net/images/top.png" alt="TOP">
+    </a>
+</div>
+<script type="text/javascript">
+    $(function ()
+    {
+        $("#ad_frm_0").height("90px");
+        
+        setTimeout(function(){
+            $("#ad_frm_2").height("200px");
+        },1000);    
+    });
+  
+</script>
+<style type="text/css">
+    .tag_list
+    {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border: 1px solid #D7CBC1;
+        color: #000000;
+        font-size: 12px;
+        line-height: 20px;
+        list-style: none outside none;
+        margin: 10px 2% 0 1%;
+        padding: 1px;
+    }
+    .tag_list h5
+    {
+        background: none repeat scroll 0 0 #E0DBD3;
+        color: #47381C;
+        font-size: 12px;
+        height: 24px;
+        line-height: 24px;
+        padding: 0 5px;
+        margin: 0;
+    }
+    .tag_list h5 a
+    {
+        color: #47381C;
+    }
+    .classify
+    {
+        margin: 10px 0;
+        padding: 4px 12px 8px;
+    }
+    .classify a
+    {
+        margin-right: 20px;
+        white-space: nowrap;
+    }
+</style>
+
+
+
+
+
+
+<div id="pop_win" style="display:none ;position: absolute; z-index: 10000; border: 1px solid rgb(220, 220, 220); top: 222.5px; left: 630px; opacity: 1; background: none 0px 0px repeat scroll rgb(255, 255, 255);">
+    
+</div>
+<div id="popup_mask"></div>
+<style>
+    #popup_mask
+    {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 9999;
+        left: 0px;
+        top: 0px;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        display: none;
+    }
+
+</style>
+
+
+
+
+
+<script type="text/javascript">
+    $(function(){        
+        
+        setTimeout(function(){
+            $(".comment_body:contains('回复')").each(function(index,item){
+                var u=$(this).text().split('：')[0].toString().replace("回复","")
+                var thisComment=$(this);
+                if(u)
+                {
+                    $.getJSON("https://passport.csdn.net/get/nick?callback=?", {users: u}, function(a) {
+                        if(a!=null&&a.data!=null&&a.data.length>0)
+                        {
+                            nick=a.data[0].n; 
+                            if(u!=nick)
+                            {
+                                thisComment.text(thisComment.text().replace(u,nick));  
+                            }
+                        }       
+                    });  
+                }
+            });         
+
+        },200);  
+
+        setTimeout(function(){
+            $(".math").each(function(index,value){$(this).find("span").last().css("color","#fff"); })
+        },5000);
+
+        setTimeout(function(){
+            $(".math").each(function(index,value){$(this).find("span").last().css("color","#fff"); })
+        },10000);
+
+        setTimeout(function(){
+            $(".math").each(function(index,value){$(this).find("span").last().css("color","#fff"); })
+        },15000);
+        
+        setTimeout(function(){
+            $("a img[src='http://js.tongji.linezing.com/stats.gif']").parent().css({"position":"absolute","left":"50%"});
+        },300);
+    });
+
+    function loginbox(){
+        var $logpop=$("#pop_win");
+        $logpop.html('<iframe src="https://passport.csdn.net/account/loginbox?service=http://static.blog.csdn.net/callback.htm" frameborder="0" height="600" width="400" scrolling="no"></iframe>');
+
+        $('#popup_mask').css({
+            opacity: 0.5,
+            width: $( document ).width() + 'px',
+            height:  $( document ).height() + 'px'
+        });
+        $('#popup_mask').css("display","block");
+ 
+        $logpop.css( {
+            top: ($( window ).height() - $logpop.height())/ 2  + $( window 
+       ).scrollTop() + 'px',
+            left:($( window ).width() - $logpop.width())/ 2
+        } );
+ 
+        setTimeout( function () {
+            $logpop.show();
+            $logpop.css( {
+                opacity: 1
+            } );
+        }, 200 );
+ 
+        $('#popup_mask').unbind("click");
+        $('#popup_mask').bind("click", function(){
+            $('#popup_mask').hide();
+            var $clopop = $("#pop_win");
+            $("#common_ask_div_sc").css("display","none");
+            $clopop.css( {
+                opacity: 0
+            } );
+            setTimeout( function () {
+                $clopop.hide();
+            }, 350 );
+            return false;
+        });
+    }   
+
+    var articletitle='Python3+Scrapy实现网页爬虫';
+
+</script>
+
+
+
+
+
+
+
+
+
+
+                        <div class="clear">
+                        </div>
+                    </div>                   
+                
+            </div>
+                   
+           <div id="side">
+               
+
+    <div class="side">
+
+<div id="panel_Profile" class="panel">
+<ul class="panel_head"><span>个人资料</span></ul>
+<ul class="panel_body profile">
+<div id="blog_userface">
+    <a href="http://my.csdn.net/qq_31573519" target="_blank">
+    <img src="http://avatar.csdn.net/F/B/3/1_qq_31573519.jpg" title="访问我的空间" style="max-width:90%"/>
+    </a>
+    <br />
+    <span><a href="http://my.csdn.net/qq_31573519" class="user_name" target="_blank">qq_31573519</a></span>
+</div>
+<div class="interact">
+
+    <a href="javascript:void(0);" class="attent" id="span_add_follow" title="[加关注]"></a>
+
+ <a href="javascript:void(0);" class="letter"  title="[发私信]" onclick="window.open('http://msg.csdn.net/letters/model?receiver=qq_31573519','_blank','height=350,width=700');_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_sixin'])"></a>  
+</div>
+<div id="blog_medal">
+                <div id="bms_box">
+                                            <a  target="_blank">
+                                                    <img src="http://c.csdnimg.cn/jifen/images/xunzhang/xunzhang/chizhiyiheng.png" onmouseover="m_over_m(this,4)" onmouseout="m_out_m()" alt="3" >
+                                            </a>
+               </div>
+
+</div>
+<ul id="blog_rank">
+    <li>访问：<span>70923次</span></li>
+    <li>积分：<span>1662</span> </li>    
+    <li >等级： <span style="position:relative;display:inline-block;z-index:1" >
+            <img src="http://c.csdnimg.cn/jifen/images/xunzhang/jianzhang/blog4.png" alt="" style="vertical-align: middle;" id="leveImg">
+            <div id="smallTittle" style=" position: absolute;  left: -24px;  top: 25px;  text-align: center;  width: 101px;  height: 32px;  background-color: #fff;  line-height: 32px;  border: 2px #DDDDDD solid;  box-shadow: 0px 2px 2px rgba (0,0,0,0.1);  display: none;   z-index: 999;">
+            <div style="left: 42%;  top: -8px;  position: absolute;  width: 0;  height: 0;  border-left: 10px solid transparent;  border-right: 10px solid transparent;  border-bottom: 8px solid #EAEAEA;"></div>
+            积分：1662 </div>
+        </span>  </li>
+    <li>排名：<span>千里之外</span></li>
+</ul>
+<ul id="blog_statistics">
+    <li>原创：<span>89篇</span></li>
+    <li>转载：<span>3篇</span></li>
+    <li>译文：<span>0篇</span></li>
+    <li>评论：<span>10条</span></li>
+</ul>
+</ul>
+</div>
+
+
+     
+ 
+<div id="panel_Category" class="panel">
+<ul class="panel_head"><span>文章分类</span></ul>
+<ul class="panel_body">    
+                 <li>
+                    <a href="/qq_31573519/article/category/6225451" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">SpringMVC</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6260226" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">Spring</a><span>(3)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6260227" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">Hibernate</a><span>(2)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6260229" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">Java</a><span>(13)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6284509" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">SQL</a><span>(5)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6296340" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">设计模式</a><span>(2)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6325481" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">SVN</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6342615" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">dataBase</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6344539" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">Json</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6357149" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">Echarts</a><span>(0)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6414054" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">Linux</a><span>(18)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6457844" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">Hive</a><span>(19)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6822424" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">Python</a><span>(6)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6840170" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">shell</a><span>(4)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6886237" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">其他</a><span>(5)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/6886300" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">hadoop</a><span>(4)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/7075215" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">算法</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/7126044" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">ES</a><span>(6)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/7166792" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">web</a><span>(1)</span>
+                </li>
+                 <li>
+                    <a href="/qq_31573519/article/category/7186674" onclick="_gaq.push(['_trackEvent','function', 'onclick', 'blog_articles_wenzhangfenlei']); ">hbase</a><span>(6)</span>
+                </li>
+</ul>
+</div>
+<div id="hotarticls" class="panel tracking-ad" data-mod="popu_340">
+<ul class="panel_head">
+    <span>       
+阅读排行    </span>
+</ul>
+
+<ul class="panel_body itemlist">
+<li>
+<a href="/qq_31573519/article/details/51383059" title="SpringMVC表单提交Action的路径问题">SpringMVC表单提交Action的路径问题</a><span>(10062)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/71107162" title="Python3+Scrapy实现网页爬虫">Python3+Scrapy实现网页爬虫</a><span>(7015)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/53914322" title="CentOS7 配置阿里云yum源">CentOS7 配置阿里云yum源</a><span>(5681)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/53667871" title="Linux下使用cmatrix正确的装逼">Linux下使用cmatrix正确的装逼</a><span>(4573)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/51685114" title="百度富文本编辑器UEditor的使用和他的图片上传">百度富文本编辑器UEditor的使用和他的图片上传</a><span>(3931)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/55104822" title="Hive中对json处理">Hive中对json处理</a><span>(3471)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/52790671" title="Hive查询报错 Invalid table alias or column reference &#39;create_time&#39;: (possible column names are: _c0, _c1">Hive查询报错 Invalid table alias or column reference &#39;create_time&#39;: (possible column names are: _c0, _c1</a><span>(3176)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/53781954" title="Java 项目启动失败，8080端口被占用解决办法">Java 项目启动失败，8080端口被占用解决办法</a><span>(2511)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/53410139" title="CentOS7 下Hive2.1.0 安装配置">CentOS7 下Hive2.1.0 安装配置</a><span>(2271)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/77542756" title="Hive获取array数组长度">Hive获取array数组长度</a><span>(1905)</span>
+</li>
+</ul>
+</div>
+
+<div id="hotarticls2" class="panel tracking-ad" data-mod="popu_341"">
+<ul class="panel_head"><span>评论排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="/qq_31573519/article/details/70991826" title="CentOS7虚拟机无法联网，无法ping通网关">CentOS7虚拟机无法联网，无法ping通网关</a><span>(3)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/51755838" title="MicroSoft_SQLServer用法全笔记">MicroSoft_SQLServer用法全笔记</a><span>(2)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/77885994" title="ES Java API - 获取所有索引名称">ES Java API - 获取所有索引名称</a><span>(2)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/51685114" title="百度富文本编辑器UEditor的使用和他的图片上传">百度富文本编辑器UEditor的使用和他的图片上传</a><span>(2)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/52298630" title="JAVA项目后台查询的数据生成Excel表格并提供给用户下载">JAVA项目后台查询的数据生成Excel表格并提供给用户下载</a><span>(1)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/51588871" title="Hibernate表间级联">Hibernate表间级联</a><span>(0)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/51811999" title="数据库优化">数据库优化</a><span>(0)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/78992689" title="shell 特殊符号用法">shell 特殊符号用法</a><span>(0)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/51822673" title="代理模式">代理模式</a><span>(0)</span>
+</li>
+<li>
+<a href="/qq_31573519/article/details/51834929" title="动态代理模式">动态代理模式</a><span>(0)</span>
+</li>
+</ul>
+</div>
+
+<div id="newcomments" class="panel">
+<ul class="panel_head"><span>最新评论</span></ul>
+<ul class="panel_body itemlist">
+    <li>
+   
+         <a href="/qq_31573519/article/details/51685114#comments">百度富文本编辑器UEditor的使用和他的图片上传</a>
+    <p style="margin:0px;"><a href="/z15732621582" class="user_name">z15732621582</a>:
+谢大神
+    </p>
+    </li>
+    <li>
+   
+         <a href="/qq_31573519/article/details/51685114#comments">百度富文本编辑器UEditor的使用和他的图片上传</a>
+    <p style="margin:0px;"><a href="/z15732621582" class="user_name">z15732621582</a>:
+富文本编辑器实现的很好
+    </p>
+    </li>
+    <li>
+   
+         <a href="/qq_31573519/article/details/70991826#comments">CentOS7虚拟机无法联网，无法ping通网关</a>
+    <p style="margin:0px;"><a href="/Yinyangyuan" class="user_name">Yinyangyuan</a>:
+这种情况暂时还没有遇到，不过谢谢把坑提前找了出来，到时候再具体交流～
+    </p>
+    </li>
+    <li>
+   
+         <a href="/qq_31573519/article/details/70991826#comments">CentOS7虚拟机无法联网，无法ping通网关</a>
+    <p style="margin:0px;"><a href="/qq_31573519" class="user_name">qq_31573519</a>:
+@Yinyangyuan:以后再次连的过程中，有可能会出现虽然这2个进程已经启动了，但是可能需要等待...
+    </p>
+    </li>
+    <li>
+   
+         <a href="/qq_31573519/article/details/70991826#comments">CentOS7虚拟机无法联网，无法ping通网关</a>
+    <p style="margin:0px;"><a href="/Yinyangyuan" class="user_name">Yinyangyuan</a>:
+谢谢博主分享，解决了我遇到的同样的问题！
+    </p>
+    </li>
+    <li>
+   
+         <a href="/qq_31573519/article/details/77885994#comments">ES Java API - 获取所有索引名称</a>
+    <p style="margin:0px;"><a href="/qq_31573519" class="user_name">qq_31573519</a>:
+@qq_34148646:是要获取索引的mapping吧，可以用client.admin().clu...
+    </p>
+    </li>
+    <li>
+   
+         <a href="/qq_31573519/article/details/77885994#comments">ES Java API - 获取所有索引名称</a>
+    <p style="margin:0px;"><a href="/qq_34148646" class="user_name">qq_34148646</a>:
+你好，我想问一下，ES全文搜索的java  API遍历搜索所有的字段，那么获取索引对应的类型和类型对...
+    </p>
+    </li>
+    <li>
+   
+         <a href="/qq_31573519/article/details/52298630#comments">JAVA项目后台查询的数据生成Excel表格并提供给用户下载</a>
+    <p style="margin:0px;"><a href="/qq_36865945" class="user_name">qq_36865945</a>:
+小飞机
+    </p>
+    </li>
+    <li>
+   
+         <a href="/qq_31573519/article/details/51755838#comments">MicroSoft_SQLServer用法全笔记</a>
+    <p style="margin:0px;"><a href="/qq_36865945" class="user_name">qq_36865945</a>:
+果然老司机。详细的一逼
+    </p>
+    </li>
+    <li>
+   
+         <a href="/qq_31573519/article/details/51755838#comments">MicroSoft_SQLServer用法全笔记</a>
+    <p style="margin:0px;"><a href="/Finder_Miss" class="user_name">Finder_Miss</a>:
+好详细啊，谢谢博主~
+    </p>
+    </li>
+</ul>
+</div>
+
+    </div>
+    <div class="clear">
+    </div>
+
+                   <div class="tracking-ad" data-view="true" data-mod="ad_popu_189" data-mtp="63" data-order="40" data-con="ad_content_1259" style="width: 250px; height: 250px;">
+                        <div id="nav_show_top_stop" style="width: 250px;height: 250px;z-index:1000">
+                       
+                            <div id="cpro_u3031286" style="text-align:center;">
+                                 <!-- 鎶曟斁浠ｇ爜 -->
+                               
+                                <!-- 璇风疆浜庢墍鏈夊箍鍛婁綅浠ｇ爜涔嬪墠 -->
+                                <script src="http://dup.baidustatic.com/js/ds.js"></script>
+
+                                <!-- 骞垮憡浣嶏細PC绔?鍗氬璇︽儏椤?宸︿晶Button2-250*250 -->
+                                <script>
+                                    (function () {
+                                        var s = "_" + Math.random().toString(36).slice(2);
+                                        document.write('<div id="' + s + '"></div>');
+                                        (window.slotbydup = window.slotbydup || []).push({
+                                            id: '4740890',
+                                            container: s,
+                                            size: '250,250',
+                                            display: 'inlay-fix'
+                                        });
+                                    })();
+                                </script>
+
+
+
+                            </div></div>
+                   </div>
+                    <script>
+
+                        setTimeout(function () {
+                            var naviga_offsetTop = 0; function naviga_stay_top() {
+                                var scrollTop = jQuery(document).scrollTop();
+                                if (scrollTop > naviga_offsetTop) {
+                                    jQuery("#nav_show_top_stop").css({ "position": "fixed" });
+                                    jQuery("#nav_show_top_stop").css({ "top": "0px" });
+                                } else { jQuery("#nav_show_top_stop").css({ "position": "fixed" }); jQuery("#nav_show_top_stop").css({ "top": naviga_offsetTop - scrollTop + "px" }); }
+                            }
+                            function onload_function() {
+                                naviga_offsetTop = jQuery("#nav_show_top_stop").position().top;
+                                jQuery(window).bind("scroll", naviga_stay_top); jQuery(window).bind("mousewheel", naviga_stay_top);
+                                jQuery(document).bind("scroll", naviga_stay_top); jQuery(document).bind("mousewheel", naviga_stay_top);
+                            } jQuery(document).ready(onload_function);
+                        }, 200);
+
+                    </script>
+
+           </div>   
+            <div class="clear">
+            </div>
+        </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    $(function () {
+        function __get_code_toolbar(snippet_id) {
+            return $("<span class='tracking-ad' data-mod='popu_167'><a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "' target='_blank' title='在CODE上查看代码片'  style='text-indent:0;'><img src='https://code.csdn.net/assets/CODE_ico.png' width=12 height=12 alt='在CODE上查看代码片' style='position:relative;top:1px;left:2px;'/></a></span>"
+                    + "<span class='tracking-ad' data-mod='popu_170'><a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "/fork' target='_blank' title='派生到我的代码片' style='text-indent:0;'><img src='https://code.csdn.net/assets/ico_fork.svg' width=12 height=12 alt='派生到我的代码片' style='position:relative;top:2px;left:2px;'/></a></span>");
+        }
+        
+        $("[code_snippet_id]").each(function () {
+            __s_id = $(this).attr("code_snippet_id");
+            if (__s_id != null && __s_id != "" && __s_id != 0 && parseInt(__s_id) > 70020) {
+                __code_tool = __get_code_toolbar(__s_id);
+                $(this).prev().find(".tools").append(__code_tool);
+            }
+        });
+
+        $(".bar").show();
+    });
+</script>
+
+
+
+
+
+    </div>
+     
+
+
+       <script type="text/javascript" src="http://static.blog.csdn.net/public/res/bower-libs/MathJax/MathJax.js?config=TeX-AMS_HTML"></script>   
+    
+    <script src="http://static.blog.csdn.net/scripts/csdn_blog_detail.min.js?v2017.041" type="text/javascript"></script>
+        
+    <script type="text/javascript" src="http://csdnimg.cn/blog/csdn_public_blog_detail.min.js?20171208115"></script>
+
+    <script type="text/javascript" src="http://medal.blog.csdn.net/showblogmedal.ashx?blogid=5653352"></script>
+
+
+  <div id="a52b5334d" style="width: 1px; height: 1px; display: none;">
+                    <script id="adJs52b5334"></script>
+                    <script>document.getElementById("adJs52b5334").src = "http://ads.csdn.net/js/opt/52b5334.js?t=" + Math.random();</script>
+   </div>
+          
+    <div class="pop_CA_cover"  style="display:none"></div>
+    <div class="pop pop_CA"  style="display:none">
+          <div class="CA_header">
+            鏀惰棌鍔╂墜
+            <span class="cancel_icon"  id="fapancle"  onclick="$('.pop_CA').hide();$('.pop_CA_cover').hide();"></span>
+          </div>
+          <iframe src="" id="fa" frameborder="0" width="100%" height="360"  scrolling="no" ></iframe>
+    </div>
+
+
+        <script type="text/javascript">
+
+            $(function () {
+                var fromjs = $("#fromjs");
+                if (fromjs.length > 0) {
+                    $("#fromjs .markdown_views pre").addClass("prettyprint");
+                    prettyPrint();
+
+                    $('pre.prettyprint code').each(function () {
+                        var lines = $(this).text().split('\n').length;
+                        var $numbering = $('<ul/>').addClass('pre-numbering').hide();
+                        $(this).addClass('has-numbering').parent().append($numbering);
+                        for (i = 1; i <= lines; i++) {
+                            $numbering.append($('<li/>').text(i));
+                        };
+                        $numbering.fadeIn(1700);
+                    });
+
+                    $('.pre-numbering li').css("color", "#999");
+                }
+            });
+
+            $(".markdown_views a[target!='_blank']").attr("target", "_blank");
+
+            //$(".toc a[target='_blank']").attr("target", "");
+
+            setTimeout(function () {
+                $(".toc a[target='_blank']").attr("target", "");
+            }, 500);
+
+        </script>
+
+</body>
+</html>   
